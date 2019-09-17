@@ -1,0 +1,1236 @@
+---
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      beforeInit: "macros.js"
+      highlightStyle: tomorrow-night-bright
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: "16:9"
+---
+
+```{r setup, include=FALSE}
+
+options(htmltools.dir.version = FALSE)
+
+knitr::opts_chunk$set(echo = TRUE, message = F, warning = F,
+                      fig.width = 10, fig.height = 8,
+                      dev = 'png')
+
+library(tidyverse)
+library(plotly)
+library(trelliscopejs)
+library(ggthemes)
+library(ggsci)
+library(xkcd)
+
+theme_update(text = element_text(size = 30, 
+                                 family = 'Helvetica'))
+
+```
+
+class: center, top
+background-image: url("ggplot2.png")
+background-size: fill
+# Intro to ggplot2
+
+---
+
+## Why ggplot?
+
+**Make good looking graphs faster in fewer lines of code**
+
+- "Grammar of Graphics"
+  - Makes a standardized syntax for making graphs
+
+- Why not base?
+
+- Anything you can do in base, you can do in ggplot
+---
+
+# Why ggplot?
+
+.pull-left[  
+      - Pros:
+      - "language" instead of cluttered toolbox
+      - Very fast data exploration
+      - Savable and reproducible
+      - Gets you to the fun part faster
+]
+.pull-right[
+  - Cons:
+      - Something new to learn
+      - Hard to go "out of bounds"
+        - But not much is out of bounds
+      - Really nerdy bar fights
+      - Not as version-stable
+      ]
+
+---
+
+## ggplot Basics
+
+```{r, eval = F, echo = T}
+
+ggplot(DATA) + 
+  geom_TYPE(mapping = aes(MAPPING))
+
+```
+
+- `ggplot` creates a blank "coordinate system"
+- `geom_`'s are layered on
+- `DATA` and "aesthetics"(`aes`) are shared across `geom`'s
+
+---
+
+## ggplot Basics
+![:scale 50%](ggplot2.jpg)
+
+---
+
+## ggplot Basics
+
+* Let's start with the "diamonds" data set
+
+```{r, echo = F}
+
+DT::datatable(head(diamonds,10))
+
+```
+
+---
+
+## ggplot Basics
+
+.pull-left[What makes a diamond expensive?
+
+```{r, echo=T, eval = F}
+
+ggplot(data = diamonds) + 
+  geom_histogram(aes(price)) 
+
+```
+]
+.pull-right[
+
+```{r, echo=F}
+
+ggplot(data = diamonds) + 
+  geom_histogram(aes(price)) 
+
+```
+
+]
+
+---
+
+
+## ggplot Basics
+
+.pull-left[
+Why in the world is 
+```{r, echo=T, eval = F}
+
+ggplot(data = diamonds) + 
+  geom_histogram(aes(price)) 
+
+```
+
+better than
+
+```{r, eval = F, tidy=T, fig.height=3}
+
+hist(diamonds$price)
+
+```
+]
+.pull-right[
+```{r, echo = FALSE}
+hist(diamonds$price)
+
+```
+
+]
+
+---
+
+# The power of `aes`
+
+.pull-left[
+- `aes` stands for aesthetics
+
+- Allows you to map data to graphics
+
+```{r, eval = F}
+
+ggplot(data = diamonds) +
+  geom_point(aes(x = carat, y = price),
+  color = 'red')
+  
+```
+]
+.pull-right[
+
+```{r, echo = F}
+ggplot(data = diamonds) +
+  geom_point(aes(x = carat, y = price),
+  color = 'red')
+  
+```
+
+]
+
+---
+
+# The power of `aes`
+
+.pull-left[
+```{r, eval = F}
+
+ggplot(data = diamonds) +
+  geom_point(aes(x = carat, y = price,
+  color = 'red'))
+
+```
+]
+.pull-right[
+
+```{r, echo = F}
+
+
+ggplot(data = diamonds) +
+geom_point(aes(x = carat, y = price,
+color = 'red'))
+```
+
+]
+
+---
+
+# The power of `aes`
+
+.pull-left[
+```{r, eval = F}
+
+
+ggplot(data = diamonds) +
+geom_point(aes(x = carat, y = price,
+color = clarity))
+
+```
+]
+.pull-right[
+
+```{r, echo = F}
+
+ggplot(data = diamonds) +
+  geom_point(aes(x = carat, y = price,
+                 color = clarity),
+             size = 4,
+             alpha = 0.5)
+```
+
+]
+
+---
+
+## The power of `aes`
+.pull-left[
+- You can map different variables to different aesthetics
+
+```{r, eval=F}
+ggplot(data = diamonds) +
+  geom_point(aes(
+  x = carat,
+  y = price,
+  color = clarity,
+  shape = cut
+  ),
+  size = 4, 
+  alpha = 0.5)
+```
+]
+.pull-right[
+```{r, echo = F}
+ggplot(data = diamonds) +
+  geom_point(aes(
+  x = carat,
+  y = price,
+  color = clarity,
+  shape = cut
+  ),
+  size = 4,
+  alpha = 0.5)
+```
+]
+---
+
+## The power of `aes`
+
+.pull-left[
+- Or the same variable to different aesthetics
+
+```{r, eval = F}
+ggplot(data = diamonds) +
+  geom_point(aes(
+  x = carat,
+  y = price,
+  color = clarity,
+  shape = clarity
+  ),
+  size = 4,
+  alpha = 0.5)
+```
+]
+.pull-right[
+```{r, echo = F}
+ggplot(data = diamonds) +
+  geom_point(aes(
+  x = carat,
+  y = price,
+  color = clarity,
+  shape = clarity
+  ),
+  size = 4,
+  alpha = 0.5)
+```
+
+]
+---
+
+## ggplot Basics
+
+- 90% of your time in ggplot is spent in 
+
+  - Pass data to `ggplot`
+  
+  - Decide on a `geom` to represent the data
+  
+  - Decide on `aes` mappings to visualize additional things
+  
+  - Make prettier
+
+---
+
+## ggplot for Data Exploration
+.pull-left[
+- What makes an expensive diamond?
+
+```{r, eval = F}
+
+diamonds %>%
+  mutate(numeric_cut = as.numeric(cut)) %>%
+  ggplot() +
+  geom_boxplot(aes(cut, price)) +
+  geom_smooth(aes(numeric_cut, price)
+  , method = 'lm',
+  se = F) +
+  scale_y_continuous(labels = scales::dollar)
+
+```
+]
+.pull-right[
+
+```{r, echo = F}
+diamonds %>%
+  mutate(numeric_cut = as.numeric(cut)) %>%
+  ggplot() +
+  geom_boxplot(aes(cut, price)) +
+  geom_smooth(aes(numeric_cut, price), method = 'lm',
+  se = F)
+```
+]
+
+
+---
+
+## ggplot for Data Exploration
+.pull-left[
+
+```{r, eval = F}
+
+
+diamonds %>%
+sample_n(1500) %>%
+ggplot() +
+geom_point(
+shape = 21,
+size = 4,
+alpha = 0.75,
+aes(carat, price, fill = cut)
+) +
+scale_y_continuous(labels = scales::dollar)
+
+```
+]
+.pull-right[
+
+```{r, echo = F}
+diamonds %>%
+  ggplot() +
+  geom_point(shape = 21,
+  size = 4,
+  aes(carat, price, fill = cut)) +
+  scale_y_continuous(labels = scales::dollar)
+```
+]
+
+
+---
+
+## ggplot for Data Exploration
+.pull-left[
+
+```{r, eval = F}
+
+diamonds %>%
+  mutate(numeric_cut = as.numeric(cut)) %>%
+  ggplot() +
+  geom_boxplot(aes(cut, carat)) +
+  geom_smooth(aes(numeric_cut, carat), method = 'lm',
+  se = F)
+```
+]
+.pull-right[
+
+```{r, echo = F}
+diamonds %>%
+  mutate(numeric_cut = as.numeric(cut)) %>%
+  ggplot() +
+  geom_boxplot(aes(cut, carat)) +
+  geom_smooth(aes(numeric_cut, carat), method = 'lm',
+  se = F)
+```
+]
+
+
+---
+
+
+## Intermediate ggplot
+
+Let's move over to the `gapminder` data set
+```{r}
+library(gapminder)
+
+DT::datatable(gapminder::gapminder)
+
+```
+
+---
+
+## Alternative `geoms`
+![](ggplot_cheat.png)
+
+---
+
+## Alternative `geoms`
+
+.pull-left[
+There are lots of different `geoms` we can use
+
+```{r, eval = F}
+gapminder %>% 
+  ggplot() + 
+  geom_bar(aes(x = continent))
+```
+]
+.pull-right[
+
+```{r, echo = F}
+gapminder %>% 
+  ggplot() + 
+  geom_bar(aes(x = continent))
+```
+
+]
+---
+
+## geoms
+
+- `geom_bar` is a little confusing
+
+- By default, it tallies counts of a thing
+  - This is the technical definition of a barplot
+  
+- A lot of the time, we want to make "bars" of x,y data
+
+```{r}
+
+gapminder %>% 
+  group_by(continent) %>% 
+  summarise(num_countries = length(unique(country)))
+
+```
+---
+
+## geom_bar
+
+.pull-left[
+```{r, eval = F}
+
+gapminder %>%
+  group_by(continent) %>%
+  summarise(num_countries =
+              length(unique(country))) %>%
+  ggplot() +
+  geom_bar(aes(continent, num_countries), stat = 'identity')
+
+```
+]
+
+.pull-right[
+
+```{r, echo = F}
+gapminder %>%
+  group_by(continent) %>%
+  summarise(num_countries = length(unique(country))) %>%
+  ggplot() +
+  geom_bar(aes(continent, num_countries), stat = 'identity')
+```
+
+
+]
+---
+
+## `geom_col` is easier
+
+.pull-left[
+```{r, eval = F}
+
+gapminder %>%
+  group_by(continent) %>%
+  summarise(num_countries =
+              length(unique(country))) %>%
+  ggplot() +
+  geom_col(aes(continent, num_countries))
+
+```
+]
+
+.pull-right[
+
+```{r, echo = F}
+gapminder %>%
+  group_by(continent) %>%
+  summarise(num_countries = length(unique(country))) %>%
+  ggplot() +
+  geom_col(aes(continent, num_countries))
+```
+
+
+]
+---
+
+## Layering `geom`'s
+
+.pull-left[
+```{r}
+
+a = gapminder %>% 
+  ggplot() + 
+  geom_line(aes(year,lifeExp))
+  
+```
+]
+.pull-right[
+
+```{r, echo = F}
+a
+```
+
+]
+
+---
+
+## Layering `geom`'s
+
+.pull-left[
+
+```{r}
+
+a <- gapminder %>% 
+  ggplot() + 
+  geom_line(aes(year,lifeExp, color = country))
+  
+```
+]
+.pull-right[
+```{r, echo=F}
+a
+```
+
+]
+---
+
+## Layering `geom`'s
+
+.pull-left[
+
+```{r}
+
+a <- gapminder %>% 
+  ggplot() + 
+  geom_line(aes(year,lifeExp, color = country),
+            show.legend = F)
+  
+```
+]
+.pull-right[
+
+```{r, echo = F}
+a
+```
+
+]
+
+---
+
+## Layering `geom`'s
+
+.pull-left[
+
+- Keep on `+`ing
+
+```{r}
+
+a <- gapminder::gapminder %>%
+  ggplot() +
+  geom_line(aes(year, lifeExp, color = country),
+  show.legend = F) +
+  geom_point(aes(year, lifeExp, color = country),
+  show.legend = F,
+  size = 4)
+  
+```
+]
+.pull-right[
+```{r, echo = F}
+a
+```
+
+]
+
+---
+
+## Layering `geom`'s
+
+.pull-left[
+
+- "global" aesthetics save a lot of typing
+
+```{r}
+
+a <- gapminder::gapminder %>%
+  ggplot(aes(year, lifeExp, color = country)) +
+  geom_line(show.legend = F) +
+  geom_point(show.legend = F,
+  size = 4)
+  
+```
+]
+.pull-right[
+
+```{r, echo = F}
+a
+```
+
+]
+
+---
+
+## Layering `geom`'s
+
+.pull-left[
+
+- You can mix and match global and "local" aesthetics
+
+```{r}
+
+a <- gapminder::gapminder %>%
+  ggplot(aes(year, lifeExp, color = country)) +
+  geom_line() +
+  geom_point(aes(size = pop)) +
+  scale_size_continuous(range = c(4, 12)) +
+  scale_color_discrete(guide = F)
+  
+```
+]
+.pull-right[
+```{r, echo = F}
+a
+```
+
+]
+
+---
+
+
+## Layering geom's
+
+.pull-left[
+- You can also combine more complex `geoms`
+
+```{r}
+
+a <- gapminder::gapminder %>% 
+  ggplot(aes(continent, lifeExp)) + 
+  geom_boxplot() + 
+  ggbeeswarm::geom_beeswarm(
+    aes(color = gdpPercap)) 
+  
+```
+]
+.pull-right[
+
+
+```{r, echo = F}
+a
+```
+]
+---
+
+## Modifying aesthetics
+
+.pull-left[
+
+- `scale_AESTHETIC_TYPE` controls aesthetic attributes
+  - `scale_color_discrete/brewer` controls discrete color scales
+  - `scale_color_continuous/gradient` controls continuous color scales
+
+```{r}
+
+library(ggbeeswarm)
+library(gapminder)
+a <- gapminder %>% 
+  ggplot(aes(continent, lifeExp)) + 
+  geom_boxplot(aes(fill = continent)) + 
+  geom_beeswarm(aes(color = gdpPercap))
+  
+```
+] 
+.pull-right[
+```{r, echo=F}
+a
+```
+
+]
+
+---
+
+## Modifying aesthetics
+
+.pull-left[
+
+
+- `scale_AESTHETIC_TYPE` controls aesthetic attributes
+  - `scale_color_discrete/brewer` controls discrete color scales
+  - `scale_color_continuous/gradient` controls continuous color scales
+]
+.pull-right[
+
+```{r, echo = F}
+
+RColorBrewer::display.brewer.all()
+  
+```
+]
+
+---
+
+## Modifying aesthetics
+.pull-left[
+- `scale_AESTHETIC_TYPE` controls aesthetic attributes
+  - `scale_color_discrete/brewer` controls discrete color scales
+  - `scale_color_continuous/gradient` controls continuous color scales
+
+```{r, eval = F}
+
+ gapminder::gapminder %>% 
+  ggplot(aes(continent, lifeExp)) + 
+  geom_boxplot(aes(fill = continent)) + 
+  ggbeeswarm::geom_beeswarm(aes(color = gdpPercap)) +
+  scale_fill_brewer(palette = 'Spectral')
+  
+```
+]
+.pull-right[
+```{r, echo = F}
+ gapminder::gapminder %>% 
+  ggplot(aes(continent, lifeExp)) + 
+  geom_boxplot(aes(fill = continent)) + 
+  ggbeeswarm::geom_beeswarm(aes(color = gdpPercap)) +
+  scale_fill_brewer(palette = 'Spectral')
+```
+
+]
+
+---
+
+
+## Modifying aesthetics
+
+.pull-left[
+```{r}
+
+a <- gapminder::gapminder %>% 
+  ggplot(aes(continent, lifeExp)) + 
+  geom_boxplot(aes(fill = continent)) + 
+  ggbeeswarm::geom_beeswarm(aes(color =
+  log(gdpPercap))) +
+  scale_fill_brewer(palette = 'Spectral') +
+  scale_color_gradient(low = 'red',
+                       high = 'blue')
+  
+```
+]
+.pull-right[
+
+```{r, echo = F}
+a
+```
+
+]
+
+---
+
+```{r, include = F}
+
+knitr::opts_chunk$set(fig.width = 15, fig.height = 6)
+
+```
+
+
+## Faceting
+
+- So far, we've covered the basic ways to 
+
+  - Use different `geom`'s
+  
+  - Define those `geom`'s aesthetics (`aes`)
+  
+  - Modify aesthetics
+  
+- Can think of x,y, and aesthetics as "dimensions"
+
+- We can get one more layer of dimensions using `facets`
+
+---
+
+## Facets
+
+```{r, echo = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp, color = country)) + 
+  geom_line(show.legend = F) + 
+  facet_wrap(~continent)
+
+```
+
+---
+
+## Facets
+
+.pull-left[
+
+- `facet_wrap(~VARIABLE)`
+
+- Automatically grids by `VARIABLE`
+
+```{r, eval = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp,
+        color = country)) + 
+  geom_line(show.legend = F) + 
+  facet_wrap(~continent)
+
+```
+]
+.pull-right[
+
+```{r, echo = F}
+gapminder %>% 
+  ggplot(aes(year,lifeExp,
+        color = country)) + 
+  geom_line(show.legend = F) + 
+  facet_wrap(~continent)
+
+```
+]
+---
+
+## Facets
+
+- `facet_grid()` allows for more control
+
+- `facet_grid( . ~ VARIABLE)`
+  - Rows
+
+- `facet_grid( Variable ~ .)`
+  - Columns
+
+- `facet_grid(VARIABLE_1 ~ VARIABLE_2)`
+  - matrix
+
+---
+
+## facet_grid( . ~ VARIABLE)
+
+```{r, echo = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp,
+        color = country)) + 
+  geom_line(show.legend = F) + 
+  facet_grid(.~continent)
+
+```
+
+---
+
+## facet_grid( VARIABLE ~ .)
+
+```{r, echo = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp,
+        color = country)) + 
+  geom_line(show.legend = F) + 
+  facet_grid(continent ~ .)
+
+```
+
+---
+
+## facet_grid( VARIABLE ~ ., scales = 'free_y')
+
+```{r, echo = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp,
+        color = country)) + 
+  geom_line(show.legend = F) + 
+  facet_grid(continent ~ ., scales = 'free_y')
+
+```
+
+---
+
+## facet_grid( VARIABLE_1 ~ Variable_2)
+
+```{r, echo = F}
+
+diamonds %>% 
+  ggplot(aes(carat,price,
+        color = clarity)) + 
+  geom_point(show.legend = F) + 
+  facet_grid(cut ~ color)
+
+```
+
+---
+
+## Themes
+
+- `geom`, `aes`, `facet` allows us to quickly plot many dimensions of data
+
+- So far though, you've probable though "eh, but these don't look too good"
+
+- `theme` to the rescue!
+
+- Beauty of `ggplot`: focus on making it look good, not making it exist
+
+- You layer "themes" like any other `geom`
+
+```{r, eval = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp, color = country)) + 
+  geom_line(show.legend = F) + 
+  theme(text = element_text(size = 42, family = 'Times New Roman'))
+
+```
+
+---
+
+## Themes
+
+```{r, echo = F}
+gapminder %>% 
+  ggplot(aes(year,lifeExp, color = country)) + 
+  geom_line(show.legend = F) + 
+  theme(text = element_text(size = 42, family = 'Times New Roman'))
+```
+
+---
+
+## Themes
+
+- You can control just about every aspect of a graph through `theme`
+
+- syntax: `theme(thing = element_thing(attributes))`
+
+- `theme(axis.text.x = element_text(size = 24, angle = 45, color = 'red'))`
+
+- `theme(plot.background = element_rect(color = 'red'))`
+
+
+---
+
+## theme(axis.text.x = element_text(size = 24, angle = 45, color = 'red',vjust = 0.5))
+
+```{r, echo = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp, color = country)) + 
+  geom_line(show.legend = F) + 
+  theme(text = element_text(size = 42),
+        axis.text.x = element_text(size = 24, angle = 45, color = 'red',
+                                   vjust = .5))
+
+```
+
+---
+
+## theme(panel.background = element_rect(fill = 'black'))
+
+```{r, echo = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp, color = country)) + 
+  geom_line(show.legend = F) + 
+theme(panel.background = element_rect(fill = 'black'),
+      text = element_text(size = 42))
+```
+
+---
+
+## Theme
+
+- There are also lots of pre-built themes that you can add on
+
+- `theme_light`
+
+- `theme_bw`
+
+- `theme_solarized2`
+
+`ggthemes` package has a lot of extras
+
+---
+
+
+## theme_light()
+
+```{r, echo = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp, color = country)) + 
+  geom_line(show.legend = F) + 
+theme_light(base_size =  42)
+
+```
+
+---
+
+## theme_classic()
+
+```{r, echo = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp, color = country)) + 
+  geom_line(show.legend = F) + 
+theme_classic(base_size =  42)
+
+```
+
+---
+
+## theme_economist()
+
+```{r, echo = F}
+
+gapminder %>% 
+  ggplot(aes(year,lifeExp, color = country)) + 
+  geom_line(show.legend = F) + 
+theme_economist(base_size =  42)
+
+```
+
+---
+
+## Saving
+
+- The other reallllly nice thing about ggplot is that you can save objects
+
+- base `plot`:
+
+  - Print to a 'device'
+  - Saved either as static item...
+  - Or save data and rerun script
+
+- `ggplot`
+
+  - Can be stored as a variable
+    - `my_plot = ggplot() +...`
+  - Can then call up `my_plot` later
+  - Or save to list/object and load it later
+  - Can still save to pdf, whatever through
+    - pdf()
+    - ggsave(file = "PATH.pdf", plot = my_plot)
+
+---
+
+## Saving
+
+.pull-left[
+
+- Saving is great for papers
+
+- Create a "base" version of your graph
+
+- Use themes to modify graphs for different uses
+
+```{r, echo = T}
+
+my_plot <- 
+  gapminder %>% 
+  filter(year == max(year)) %>% 
+  ggplot(aes(gdpPercap, lifeExp)) + 
+  geom_point(size = 4)
+
+```
+]
+.pull-right[
+
+```{r, echo = F}
+
+my_plot
+
+```
+
+]
+
+---
+
+```{r, include = F}
+
+knitr::opts_chunk$set(fig.width = 15, fig.height = 5)
+
+```
+
+## Submit to Journal of Stuffy Academics
+
+
+```{r}
+
+boring_theme <- 
+  theme_classic(base_size = 16,
+           base_family = 'Andale Mono')
+
+```
+
+---
+
+## Submit to Journal of Stuffy Academics
+
+```{r, echo = T}
+
+my_plot + 
+  boring_theme
+
+```
+
+---
+
+## Party Theme
+
+```{r}
+
+party_theme <- 
+  xkcd::theme_xkcd() + 
+  theme(text = element_text(size = 54),
+        panel.background = element_rect(fill = 'green'))
+```
+```{r, eval=F}
+my_plot +
+  party_theme +
+  scale_x_log10(labels = scales::comma) +
+  geom_point(
+  aes(fill = country),
+  shape = 21,
+  show.legend = F,
+  size = 4
+  ) +
+  xlab('GDP Per Capita') +
+  ylab('Life Expectancy')
+```
+
+
+---
+
+## Party Theme
+
+```{r, echo = F}
+
+my_plot +
+  party_theme +
+  scale_x_log10(labels = scales::comma) +
+  geom_point(
+  aes(fill = country),
+  shape = 21,
+  show.legend = F,
+  size = 4
+  ) +
+  xlab('GDP Per Capita') +
+  ylab('Life Expectancy')
+  
+```
+
+---
+
+## Fancy Things
+
+- Since `ggplot` has a standardized API, people can write extensions
+
+- Allows `ggplot` objects to be passed to all kinds of other things
+
+---
+
+## ggplotly
+
+```{r}
+
+plotly_plot <- my_plot +
+  geom_point(aes(fill = country, key = continent), shape = 21,
+             size = 4,
+             show.legend = F) + 
+  scale_x_continuous(labels = scales::dollar) + 
+  theme_fivethirtyeight(base_size = 14) + 
+  theme(axis.title = element_text())
+  
+```
+
+---
+
+## ggplotly(plotly_plot)
+
+```{r, echo=F}
+ggplotly(plotly_plot)
+```
+
+
+---
+
+
+
+
+
+
+
+
+
+

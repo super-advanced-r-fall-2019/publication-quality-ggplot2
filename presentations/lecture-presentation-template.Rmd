@@ -4,8 +4,8 @@ subtitle: "FSH 507 Fall 2019"
 author: "Your Name"
 date: " `r Sys.Date()`"
 output:
-  powerpoint_presentation: default
   ioslides_presentation: default
+  powerpoint_presentation: default
   html_document: default
   slidy_presentation: default
 ---
@@ -49,4 +49,66 @@ pressure %>%
 # Materials
 
 
+## Suggested Topics
+
+* understanding the philosophy of the grammar of graphics
+  - mapping data to aesthetics, displaying aesthetics with geometries
+
+* Messing with attributes of one geometry
+  - what goes into `aes` and what goes outside
+  - adding aes() inside `ggplot` call vs inside `geom_XX` call
+
+* Different geometries for different kinds of data
+  - discrete vs. continuous etc. 
+  
+* Themes!
+  - basic structure of `theme` argument (e.g. element_text, element_rect, etc.)
+  - using themes customize appearance of plots
+  - change fonts, colors, sizes, etc.
+
+## Suggested Topics
+
+* Faceting 
+  * facet_wrap vs facet_grid
+  * customizing facets with grid
+
+* Layering multiple geometries /plots
+  * discrete + continuous layers
+  * controlling aesthetics across multiple layers
+  * Multiple plots with patchwork/cowplot
+  
+* Exporting ggplot objects
+  * saving as .rds
+  * explorting to pdf/png/tiff etc. 
+  
+* ggplot2 extensions
+  * gganimate
+  * ggplotly
+  * the list goes one
+
+
+## Exercise Ideas
+
+* Recreate the most complicated plot you've ever made in ggplot2
+
+* Use ggplot2 to make a first draft of a figure you're working on for a publication/dissertation
+
+* design and apply a custom theme
+
+## Helpful things
+
+I've put a very old seminar I did on ggplot in the presentations folder
+
+the [ggplot2 cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf) is great!
+
+https://github.com/eco-data-science/VisualizingData/blob/master/ggplot2_intro.Rmd
+
+https://r4ds.had.co.nz/data-visualisation.html
+
+
+https://towardsdatascience.com/murdering-a-legendary-data-story-what-can-we-learn-from-a-grammar-of-graphics-ad6ca42f5e30
+
+https://cedricscherer.netlify.com/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r
+
+https://socviz.co/index.html#preface
 
