@@ -5,15 +5,22 @@ author: "Amanda Warlick"
 date: " `r Sys.Date()`"
 fontsize: 10pt
 output:
+  slidy_presentation: default
   # powerpoint_presentation: default
   ioslides_presentation: default
   html_document: default
-  # slidy_presentation: default
 ---
+
+<style>
+slides > slide {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+</style>
 
 ```{r setup, include=FALSE, echo = F}
 
-knitr::opts_chunk$set(warning = F, echo = T, tidy = T, fig.height = 3, fig.width = 4, fig.align = 'center', 
+knitr::opts_chunk$set(warning = F, message = F, echo = T, tidy = F, fig.height = 4.5, fig.width = 7, fig.align = 'center', 
                       tidy.opts = list(width.cutoff=10), width = 10)
 
 library(tidyverse)
@@ -73,7 +80,7 @@ my_theme <- function(...) {
     - Seabird counts by site, year, month, yday and temperature and tide   
     - Covariates: temperature, tide height, minutes since high tide  
 
-```{r, echo = TRUE, size = 1}
+```{r data, echo = TRUE, size = 1}
 
 head(data)
 
@@ -84,7 +91,7 @@ head(data)
 - Plot type
     - Controlled by 'geom_*()' argument
 
-```{r }
+```{r basic scatter}
 
 ggplot(data, aes(yday, temp)) + 
   geom_point()
@@ -95,7 +102,7 @@ ggplot(data, aes(yday, temp)) +
 - Axis labels  
 - aes(): change color OUTSIDE aes() to manually designate
 
-```{r }
+```{r custom 1}
 
 ggplot(data, aes(yday, temp)) + 
   geom_point(color = 'blue') +
@@ -108,7 +115,7 @@ ggplot(data, aes(yday, temp)) +
 - Axis labels  
 - aes(): change color INSIDE aes() to group by variable
 
-```{r }
+```{r custom 2}
 
 ggplot(data, aes(yday, temp)) + 
   geom_point(aes(color = factor(mo))) +
@@ -121,7 +128,7 @@ ggplot(data, aes(yday, temp)) +
 - Change colors, sizes, and legend labels
 - Overlapping points: alpha for transparency or position = 'jitter'
 
-```{r }
+```{r custom 3}
 
 ggplot(data, aes(yday, temp)) + 
       #try grouping color by year or site
@@ -141,12 +148,14 @@ ggplot(data, aes(yday, temp)) +
 ```
 
 ## Customize - class exercise
+- Options for element items:
+    - element_rect(), element_text(), element_blank()
 - Play with elements of theme():
     - [Elements list](https://ggplot2.tidyverse.org/reference/theme.html)  
     - [Designed themes](https://ggplot2.tidyverse.org/reference/ggtheme.html)
     - Then check out my_theme() in setup chunk
 
-```{r }
+```{r exercise, eval = F}
 
 ggplot(data, aes(yday, temp)) + 
   geom_point(aes(color = factor(mo))) + 
@@ -157,7 +166,8 @@ ggplot(data, aes(yday, temp)) +
         panel.border = element_rect(fill = NA), #border of plot
         panel.grid = element_blank(),
         legend.key = element_blank(),
-        legend.position = 'top') +
+        legend.position = 'top',
+        axis.text = element_text(size = 10)) +
   scale_color_manual(labels = c('May', 'June', 'July', 'August'), values = mycolors)
   
 
@@ -166,7 +176,7 @@ ggplot(data, aes(yday, temp)) +
 ## Other plot types
 - Boxplot
 
-```{r }
+```{r boxplot}
 
 ggplot(data, aes(factor(mo), temp)) + 
   geom_boxplot(aes(color = factor(mo))) + #try geom_violin()!
@@ -177,10 +187,10 @@ ggplot(data, aes(factor(mo), temp)) +
 ```
 
 ## Faceting
-- Common options include moving the strip title, having differing y-axis scales, ncol/nrow
+- Common display options include moving the strip title, having differing y-axis scales, ncol/nrow
 - Facet_wrap versus facet_grid
 
-```{r }
+```{r facets}
 
 ggplot(data, aes(factor(mo), temp)) + 
   geom_boxplot(aes(color = factor(mo))) + 
@@ -194,6 +204,7 @@ ggplot(data, aes(factor(mo), temp)) +
 
 
 ## Multiple geom layers
+- Think beyond point + line
 
 ```{r }
 
@@ -211,6 +222,7 @@ ggplot(data_means %>% filter(site == 'Cliffside'),
 ## Stat layers
 
 - geom_smooth()
+  - Display or turn of SE band, 'lm' versus 'loess' method
 
 ```{r }
 
@@ -230,7 +242,7 @@ ggplot(data_means %>% filter(site == 'Cliffside'), #look at different sites, or 
 ```
 
 ## Stat layers
-
+- Example of varied y-axis scale by facet
 ```{r }
 
 ggplot(data_means, 
@@ -254,8 +266,9 @@ ggplot(data_means,
 
 
 ## gganimate for gifs
+- Little extra for making it dynamic
 
-```{r}
+```{r animate, fig.width=5, fig.height=3}
 
 ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
   geom_point(alpha = 0.7, show.legend = FALSE) +
@@ -263,7 +276,8 @@ ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
   scale_size(range = c(2, 12)) +
   scale_x_log10() +
   facet_wrap(~continent) +
-  # gganimate parts
+  my_theme() +
+  # gganimate 
   labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
   transition_time(year) +
   ease_aes('linear')
@@ -272,6 +286,7 @@ ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
 
 ## Map-making
 - Birds example
+  - Zoom in/out with xlim and ylim
 
 ```{r}
 
@@ -281,7 +296,7 @@ ggplot(pnw_state_outline) +
 geom_polygon(aes(x = long, y = lat, group = group), fill = "grey93", color = "grey50", size = 0.2) + 
   coord_fixed(1, ylim = c(47, 49.15), xlim = c(-125, -121)) + #closer in
 # coord_fixed(1, ylim = c(45, 49.15), xlim = c(-125, -116)) + #adjust these to zoom in/out; whole state
-  geom_point(data = data, aes(long, lat)) +
+  geom_point(data = data, aes(long, lat, color = temp)) +
   xlab('') + ylab('') +
   theme_classic() +
    theme(
@@ -311,17 +326,9 @@ ggplot(us_pop, aes(long, lat, group = group)) +
 ```
 
 
-## Exercise: explore density plots
-
-- [This example](https://wilkelab.org/practicalgg/articles/health_status.html)
-
-
-## ggplotly()?
-- Something here?
-
 ## Power of `cowplot`
 
-```{r}
+```{r cowplot, fig.width = 11}
 
 a <- ggplot(us_pop, aes(long, lat, group = group)) +
   geom_polygon(aes(fill = population)) +
@@ -336,14 +343,19 @@ b <- ggplot(data_means %>% filter(site == 'Cliffside'),
            strip.background = element_blank()) +
   scale_color_manual(labels = c('May', 'June', 'July', 'August'), values = mycolors)
 
-plot_grid(a, b, ncol = 1)
+plot_grid(a, b, ncol = 2)
 
 ```
 
   
+## Exercise 1: explore density plots
+
+- [This example](https://wilkelab.org/practicalgg/articles/health_status.html)
 
 
-
+## Exercise 2: Make your own
+- Look at the diversity of types of ggplots you can make, and create 1-2 plots using the seabird data that involve other geoms
+- Or, make 1-2 plots using your own data!
 
 
 
