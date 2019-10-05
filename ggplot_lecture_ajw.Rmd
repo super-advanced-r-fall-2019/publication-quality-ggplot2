@@ -35,7 +35,7 @@ library(gganimate)
 
 
 #the dreaded setwd()
-setwd("~/Documents/SAFS/FSH507R_ggplot/presentations/For Lecture")
+# setwd("~/Documents/SAFS/FSH507R_ggplot/presentations/For Lecture")
 uspop_data <- read.csv('USpop.csv', header = T, stringsAsFactors = F) %>%
   transform(region = tolower(region))
 data <- read.csv('PiGu_exDat.csv', header = T, stringsAsFactors = F)
