@@ -372,7 +372,7 @@ Examples of manipulating [everything](https://cedricscherer.netlify.com/2019/08/
 
 A [master list](http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html) of (sometimes ugly, but mind-opening) ggplots
 
-Helpful outline of functionality per [specific geoms] (https://ggplot2.tidyverse.org/reference/)
+Helpful outline of functionality per [specific geoms](https://ggplot2.tidyverse.org/reference/)
 
 Examples from [R for Data Science](https://r4ds.had.co.nz/data-visualisation.html)
 
